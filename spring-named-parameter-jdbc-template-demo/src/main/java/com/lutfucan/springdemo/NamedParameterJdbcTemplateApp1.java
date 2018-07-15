@@ -43,7 +43,7 @@ public class NamedParameterJdbcTemplateApp1 {
 		daoUtils.printSuccessFailure(daoUtils.deleteOperation, isDeleted);
 		daoUtils.printOrganizations(dao.getAllOrganizations(), daoUtils.deleteOperation);
 
-		dao.cleanup();
+//		dao.cleanup();
 		daoUtils.printOrganizationCount(dao.getAllOrganizations(), daoUtils.cleanupOperation);
 	}
 
