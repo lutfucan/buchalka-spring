@@ -1,30 +1,37 @@
-package com.lutfucan.domainlist.config;
-
-import java.sql.SQLException;
+package com.timbuchalka.springdemo.config;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
+import com.timbuchalka.springdemo.interceptors.ExecutionTimerInterceptor;
+import com.timbuchalka.springdemo.interceptors.HeaderInterceptor;
+
 @Configuration
-@ComponentScan("com.lutfucan.domainlist")
+@ComponentScan("com.timbuchalka.springdemo")
 @EnableWebMvc
-public class WebMvcConfig implements WebMvcConfigurer {
+public class WebMvcConfig implements WebMvcConfigurer{
+	
+	@Autowired
+	private HeaderInterceptor headerInterceptor;
+	@Autowired
+	private ExecutionTimerInterceptor executionTimeInterceptor;
 
 	@Bean
-	public DataSource DataSource() throws SQLException {
+	public DataSource dataSource() {
 		final JndiDataSourceLookup dsLookup = new JndiDataSourceLookup();
 		dsLookup.setResourceRef(true);
-		DataSource dataSource = dsLookup.getDataSource("jdbc/domainsdb");
+		DataSource dataSource = dsLookup.getDataSource("jdbc/springdb");
 		return dataSource;
 	}
 	
@@ -39,6 +46,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/").setViewName("anasayfa");	
+		registry.addViewController("/").setViewName("home");
 	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(headerInterceptor);
+		registry.addInterceptor(executionTimeInterceptor).addPathPatterns("/location");
+	}
+	
+	
 }
